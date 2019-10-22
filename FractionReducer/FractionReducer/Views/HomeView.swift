@@ -5,37 +5,35 @@ struct HomeView: View {
 	
 	var output: (numerator: Int, denominator: Int, isValid: Bool)? {
 		if input.isEmpty { return nil }
+		
 		let parts = input.split(separator: Character("/")).compactMap {
 			Int(String($0).trimmingCharacters(in: .whitespacesAndNewlines))
 		}
+		
 		guard
 			parts.count == 2,
 			let numerator = parts.first,
 			let denominator = parts.last,
 			denominator != 0
 		else { return (0, 0, false) }
+		
 		let reducedFraction = reduceFraction(numerator, denominator)
 		return (reducedFraction.numerator, reducedFraction.denominator, true)
 	}
 	
 	var outputView: AnyView {
-		if let output = output {
-			if output.isValid {
-				return AnyView(OutputView(
-					numerator: output.numerator,
-					denominator: output.denominator,
-					errorMessage: nil
-				))
-			} else {
-				return AnyView(OutputView(
-					numerator: 0,
-					denominator: 0,
-					errorMessage: "There was an error parsing your input"
-				))
-			}
-		} else {
-			return AnyView(EmptyView())
-		}
+		guard let output = output else { return AnyView(EmptyView()) }
+		return output.isValid
+			? AnyView(OutputView(
+				numerator: output.numerator,
+				denominator: output.denominator,
+				errorMessage: nil
+			))
+			: AnyView(OutputView(
+				numerator: 0,
+				denominator: 0,
+				errorMessage: "There was an error parsing your input"
+			))
 	}
 	
 	func reduceFraction(_ numerator: Int, _ denominator: Int) -> (numerator: Int, denominator: Int) {

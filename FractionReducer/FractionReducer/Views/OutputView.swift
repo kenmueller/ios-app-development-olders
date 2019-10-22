@@ -5,8 +5,8 @@ struct OutputView: View {
 	let denominator: Int
 	let errorMessage: String?
 	
-	var separatorWidth: Int {
-		max(String(numerator).count, String(denominator).count) * 11 + 30
+	var separatorWidth: CGFloat {
+		.init(max(String(numerator).count, String(denominator).count) * 11 + 30)
 	}
 	
 	var body: some View {
@@ -19,7 +19,7 @@ struct OutputView: View {
 				if denominator != 1 {
 					VStack {
 						Rectangle()
-							.frame(width: .init(separatorWidth), height: 1.5)
+							.frame(width: separatorWidth, height: 1.5)
 							.padding(.horizontal, 50)
 							.padding(.top, -7)
 						Text(String(denominator))
@@ -29,8 +29,7 @@ struct OutputView: View {
 				}
 			} else {
 				Text(errorMessage ?? "An error occurred")
-					.fontWeight(errorMessage == nil ? .bold : .regular)
-					.foregroundColor(errorMessage == nil ? .black : Color.red.opacity(0.8))
+					.foregroundColor(Color.red.opacity(0.8))
 			}
 		}
 	}
