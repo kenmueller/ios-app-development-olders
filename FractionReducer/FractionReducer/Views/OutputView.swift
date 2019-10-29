@@ -18,10 +18,7 @@ struct OutputView: View {
 					.bold()
 				if denominator != 1 {
 					VStack {
-						Rectangle()
-							.frame(width: separatorWidth, height: 1.5)
-							.padding(.horizontal, 50)
-							.padding(.top, -7)
+						FractionLine(width: separatorWidth)
 						Text(String(denominator))
 							.bold()
 							.padding(.top, -8)
@@ -29,6 +26,7 @@ struct OutputView: View {
 				}
 			} else {
 				Text(errorMessage ?? "An error occurred")
+					.bold()
 					.foregroundColor(Color.red.opacity(0.8))
 			}
 		}

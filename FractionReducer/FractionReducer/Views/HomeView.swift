@@ -3,11 +3,22 @@ import SwiftUI
 struct HomeView: View {
 	@State var input = ""
 	
+	func reduceFraction(_ numerator: Int, _ denominator: Int) -> (numerator: Int, denominator: Int) {
+		var x = numerator
+		var y = denominator
+		while (y != 0) {
+			let temp = y
+			y = x % y
+			x = temp
+		}
+		return (numerator / x, denominator / x)
+	}
+	
 	var output: (numerator: Int, denominator: Int, isValid: Bool)? {
 		if input.isEmpty { return nil }
 		
 		let parts = input.split(separator: Character("/")).compactMap {
-			Int(String($0).trimmingCharacters(in: .whitespacesAndNewlines))
+			Int(String($0).trimmingCharacters(in: .whitespaces))
 		}
 		
 		guard
@@ -21,48 +32,56 @@ struct HomeView: View {
 		return (reducedFraction.numerator, reducedFraction.denominator, true)
 	}
 	
-	var outputView: AnyView {
-		guard let output = output else { return AnyView(EmptyView()) }
-		return output.isValid
-			? AnyView(OutputView(
-				numerator: output.numerator,
-				denominator: output.denominator,
-				errorMessage: nil
-			))
-			: AnyView(OutputView(
-				numerator: 0,
-				denominator: 0,
-				errorMessage: "There was an error parsing your input"
-			))
-	}
-	
-	func reduceFraction(_ numerator: Int, _ denominator: Int) -> (numerator: Int, denominator: Int) {
-		var x = numerator
-		var y = denominator
-		while (y != 0) {
-			let temp = y
-			y = x % y
-			x = temp
-		}
-		return (numerator / x, denominator / x)
-	}
-	
 	var body: some View {
-		NavigationView {
+		ZStack {
+			LinearGradient(
+				gradient: .init(colors: [
+					.init("LightBackground"),
+					.init("Purple")
+				]),
+				startPoint: .top,
+				endPoint: .bottom
+			)
+			.edgesIgnoringSafeArea(.all)
 			VStack {
-				Text("YOUR FRACTION")
-					.bold()
-					.font(.caption)
-					.foregroundColor(.gray)
-					.frame(maxWidth: .infinity, alignment: .leading)
-				TextField("", text: $input)
-					.textFieldStyle(RoundedBorderTextFieldStyle())
-				outputView
+				VStack {
+					TitleText(text: "Fraction Reducer")
+						.padding(.bottom, 30)
+					Text("YOUR FRACTION")
+						.bold()
+						.font(.caption)
+						.foregroundColor(.gray)
+						.frame(maxWidth: .infinity, alignment: .leading)
+					TextField("", text: $input)
+						.textFieldStyle(RoundedBorderTextFieldStyle())
+					if output != nil {
+						if output!.isValid {
+							OutputView(
+								numerator: output!.numerator,
+								denominator: output!.denominator,
+								errorMessage: nil
+							)
+						} else {
+							OutputView(
+								numerator: 0,
+								denominator: 0,
+								errorMessage: "There was an error parsing your input"
+							)
+						}
+					}
+				}
+				.padding(.horizontal, 20)
 				Spacer()
+				ZStack(alignment: .bottom) {
+					BottomGradient()
+					Text("By Ken Mueller")
+						.bold()
+						.foregroundColor(.white)
+						.padding(.bottom, 40)
+				}
 			}
-			.padding(.top, 10)
-			.padding(.horizontal, 20)
-			.navigationBarTitle("Fraction Reducer")
+			.edgesIgnoringSafeArea(.bottom)
+			.padding(.top)
 		}
 	}
 }
